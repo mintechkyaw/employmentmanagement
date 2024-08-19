@@ -40,8 +40,12 @@ class EmployeeController extends Controller
      */
     public function show($user)
     {
-        $user = User::find($user);
-        return new EmploymentResource($user);
+        if ($user = User::find($user)) {
+            return new EmploymentResource($user);
+        }
+        return response()->json([
+            'msg' => 'user not found!'
+        ]);
     }
 
     /**
@@ -59,12 +63,16 @@ class EmployeeController extends Controller
      */
     public function destroy($user)
     {
-        $user = User::find($user);
-        if ($user->id == Auth::id()) {
-            return response()->json(["messsage'=> 'You're deleting yourself "]);
-        } else {
-            $user->delete();
-            return  response()->json(['message' => 'Employee Deleted.'], 202);
+        if ($user = User::find($user)) {
+            if ($user->id == Auth::id()) {
+                return response()->json(["messsage'=> 'You're deleting yourself "]);
+            } else {
+                $user->delete();
+                return  response()->json(['message' => 'Employee Deleted.'], 202);
+            }
         }
+        return response()->json([
+            'msg' => 'user not found!'
+        ]);
     }
 }
